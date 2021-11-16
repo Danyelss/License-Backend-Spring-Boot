@@ -1,7 +1,7 @@
 package com.license.CryptoBank.SecurityConfig;
 
-import com.license.CryptoBank.DatabaseFilter.CustomAuthenticationFilter;
-import com.license.CryptoBank.DatabaseFilter.CustomAuthorizationFilter;
+import com.license.CryptoBank.Filter.CustomAuthenticationFilter;
+import com.license.CryptoBank.Filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

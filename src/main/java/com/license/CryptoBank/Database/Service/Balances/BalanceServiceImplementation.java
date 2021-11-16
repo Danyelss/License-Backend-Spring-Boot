@@ -1,7 +1,7 @@
-package com.license.CryptoBank.databaseService.Balances;
+package com.license.CryptoBank.Database.Service.Balances;
 
-import com.license.CryptoBank.databaseEntities.Balances;
-import com.license.CryptoBank.databaseRepository.BalancesRepository;
+import com.license.CryptoBank.Database.Entities.Balances;
+import com.license.CryptoBank.Database.Repository.BalancesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

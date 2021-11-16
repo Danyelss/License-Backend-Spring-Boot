@@ -1,13 +1,13 @@
-package com.license.CryptoBank.DatabaseApi;
+package com.license.CryptoBank.API;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.license.CryptoBank.databaseEntities.Role;
-import com.license.CryptoBank.databaseEntities.User;
-import com.license.CryptoBank.databaseService.User.UserService;
+import com.license.CryptoBank.Database.Entities.Role;
+import com.license.CryptoBank.Database.Entities.User;
+import com.license.CryptoBank.Database.Service.User.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

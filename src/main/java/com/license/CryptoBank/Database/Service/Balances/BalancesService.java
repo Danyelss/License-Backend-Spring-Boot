@@ -1,6 +1,6 @@
-package com.license.CryptoBank.databaseService.Balances;
+package com.license.CryptoBank.Database.Service.Balances;
 
-import com.license.CryptoBank.databaseEntities.Balances;
+import com.license.CryptoBank.Database.Entities.Balances;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ public interface BalancesService {
     List<Balances> getBalances();
 
     void saveETH_TransactionLogsToUsername(String username, String log);
+
     void saveFIAT_TransactionLogsToUsername(String username, String log);
 
 }

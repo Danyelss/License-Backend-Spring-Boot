@@ -1,4 +1,4 @@
-package com.license.CryptoBank.DatabaseFilter;
+package com.license.CryptoBank.Filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

@@ -1,4 +1,4 @@
-package com.license.CryptoBank.databaseEntities;
+package com.license.CryptoBank.Database.Entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

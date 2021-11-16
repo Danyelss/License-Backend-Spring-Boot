@@ -1,7 +1,7 @@
-package com.license.CryptoBank.databaseService.User;
+package com.license.CryptoBank.Database.Service.User;
 
-import com.license.CryptoBank.databaseEntities.Role;
-import com.license.CryptoBank.databaseEntities.User;
+import com.license.CryptoBank.Database.Entities.Role;
+import com.license.CryptoBank.Database.Entities.User;
 
 import java.util.List;
 

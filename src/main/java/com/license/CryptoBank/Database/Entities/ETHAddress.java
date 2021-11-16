@@ -1,4 +1,4 @@
-package com.license.CryptoBank.databaseEntities;
+package com.license.CryptoBank.Database.Entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,9 +13,18 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class ETHAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
+
+    private String username;
+
+    public String getUsername() {
+
+        return username;
+    }
+
+    private String address;
+    private double balance;
 }
