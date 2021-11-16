@@ -1,9 +1,9 @@
-package com.license.CryptoBank.databaseService;
+package com.license.CryptoBank.databaseService.User;
 
-import com.license.CryptoBank.databaseEntities.User;
 import com.license.CryptoBank.databaseEntities.Role;
-import com.license.CryptoBank.databaseRepository.UserRepository;
+import com.license.CryptoBank.databaseEntities.User;
 import com.license.CryptoBank.databaseRepository.RoleRepository;
+import com.license.CryptoBank.databaseRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,13 +46,13 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
 
-
     @Override
     public User saveUser(User user) {
         log.info("Saving new user to database {}", user.getLast_name());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
 
     @Override
     public Role saveRole(Role role) {

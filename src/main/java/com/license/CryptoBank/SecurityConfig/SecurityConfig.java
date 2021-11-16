@@ -1,4 +1,4 @@
-package com.license.CryptoBank.DatabaseSecurity;
+package com.license.CryptoBank.SecurityConfig;
 
 import com.license.CryptoBank.DatabaseFilter.CustomAuthenticationFilter;
 import com.license.CryptoBank.DatabaseFilter.CustomAuthorizationFilter;
@@ -38,7 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh").permitAll();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
-        //http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/api/user/compot").permitAll();
         //http.authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
