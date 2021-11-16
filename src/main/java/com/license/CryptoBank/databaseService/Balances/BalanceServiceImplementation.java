@@ -45,4 +45,14 @@ public class BalanceServiceImplementation implements BalancesService {
         return balancesRepository.findAll();
     }
 
+    @Override
+    public void saveETH_TransactionLogsToUsername(String username, String log) {
+        balancesRepository.findByUsername(username).addETH_TransactionLog(log);
+    }
+
+    @Override
+    public void saveFIAT_TransactionLogsToUsername(String username, String log) {
+        balancesRepository.findByUsername(username).addFIAT_TransactionLog(log);
+    }
+
 }

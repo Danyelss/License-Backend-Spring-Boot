@@ -10,4 +10,8 @@ public interface BalancesService {
     Balances getBalanceByUsername(String username);
 
     List<Balances> getBalances();
+
+    void saveETH_TransactionLogsToUsername(String username, String log);
+    void saveFIAT_TransactionLogsToUsername(String username, String log);
+
 }

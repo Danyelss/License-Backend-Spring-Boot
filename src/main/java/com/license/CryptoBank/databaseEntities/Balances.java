@@ -3,8 +3,12 @@ package com.license.CryptoBank.databaseEntities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,6 +29,19 @@ public class Balances {
     private double ETH_BAL;
     private double FIAT_BAL;
 
-    //@ManyToOne(fetch = FetchType.EAGER)
-   // private TransactionLogs logs;
+    //@Type(type = "string")
+    @ElementCollection
+    private List<String> ETH_TransactionLogs = new ArrayList<>();
+
+    //@Type(type = "string")
+    @ElementCollection
+    private List<String> FIAT_TransactionLogs = new ArrayList<>();
+
+    public void addETH_TransactionLog(String string) {
+        ETH_TransactionLogs.add(string);
+    }
+
+    public void addFIAT_TransactionLog(String string) {
+        FIAT_TransactionLogs.add(string);
+    }
 }
