@@ -41,7 +41,7 @@ public class CryptoBankApplication {
             userService.saveUser(new User(null, "andrei", "0000", "Bretea", "Andrei", "andrei@armata.com", "0725435432", new ArrayList<>()));
 
             userService.addRoleToUser("cosmin", "ROLE_USER");
-            userService.addRoleToUser("beni", "ROLE_USER");
+            userService.addRoleToUser("beni", "ROLE_ADMIN");
             userService.addRoleToUser("paula", "ROLE_USER");
             userService.addRoleToUser("andrei", "ROLE_USER");
 
