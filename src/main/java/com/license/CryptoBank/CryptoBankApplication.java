@@ -27,7 +27,7 @@ public class CryptoBankApplication {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    /*@Bean
     CommandLineRunner run(UserService userService, BalancesService balancesService) {
         return args -> {
             userService.saveRole(new Role(null, "ROLE_USER"));
@@ -67,7 +67,7 @@ public class CryptoBankApplication {
             balancesService.saveBalance(new Balances(null, "paula", 2.5, 2.3, ETHTestLog, FIATTestLog));
 
         };
-    }
+    } */
 }
 
 
