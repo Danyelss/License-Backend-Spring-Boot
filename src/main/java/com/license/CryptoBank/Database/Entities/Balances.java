@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class Balances {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     private String username;
 
     public String getUsername() {
@@ -24,7 +26,9 @@ public class Balances {
         return username;
     }
 
+    @NotNull
     private double ETH_BAL;
+    @NotNull
     private double FIAT_BAL;
 
     //@Type(type = "string")

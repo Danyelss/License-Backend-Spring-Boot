@@ -120,7 +120,6 @@ public class UserResource {
         } else {
             throw new RuntimeException("Refresh token is missing");
         }
-
     }
 }
 
