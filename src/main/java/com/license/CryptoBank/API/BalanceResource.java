@@ -62,7 +62,13 @@ public class BalanceResource {
 
                 Map<String, String> bal = new HashMap<>();
                 bal.put("eth", balance.getETH_BAL()+"");
+
+                log.info(balance.getETH_BAL()+" ETH");
+
                 bal.put("fiat", balance.getFIAT_BAL()+"");
+
+                log.info(balance.getETH_BAL()+" FIAT");
+
                 response.setContentType(APPLICATION_JSON_VALUE);
 
                 new ObjectMapper().writeValue(response.getOutputStream(), bal);
