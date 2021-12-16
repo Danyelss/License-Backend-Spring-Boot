@@ -18,13 +18,26 @@ public class ETHAddress {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String username;
+    public Long getId() {
 
-    public String getUsername() {
-
-        return username;
+        return id;
     }
 
     private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    private String privateKey;
+
     private double balance;
 }
