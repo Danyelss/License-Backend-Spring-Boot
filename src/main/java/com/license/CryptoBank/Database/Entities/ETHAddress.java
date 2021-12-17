@@ -25,6 +25,10 @@ public class ETHAddress {
 
     private String address;
 
+    private String privateKey;
+
+    private double balance;
+
     public String getAddress() {
         return address;
     }
@@ -36,8 +40,4 @@ public class ETHAddress {
     public double getBalance() {
         return balance;
     }
-
-    private String privateKey;
-
-    private double balance;
 }
