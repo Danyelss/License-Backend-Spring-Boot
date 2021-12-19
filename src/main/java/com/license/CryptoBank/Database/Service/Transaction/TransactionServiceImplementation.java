@@ -25,16 +25,6 @@ public class TransactionServiceImplementation implements TransactionService {
     }
 
     @Override
-    public double getBalanceFromAdressById(Long id) {
-        ETHAddress ethAddress = ethAddressRepository.getById(id);
-        double balance = ethAddress.getBalance();
-
-        log.info("Adress with id {} has {} eth.", id, balance);
-
-        return balance;
-    }
-
-    @Override
     public ETHAddress getEthAdressById(Long id) {
         log.info("Fetching adress with id {}", id);
         return ethAddressRepository.getById(id);

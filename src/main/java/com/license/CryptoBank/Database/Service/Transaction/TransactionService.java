@@ -7,8 +7,6 @@ import java.util.List;
 public interface TransactionService {
     ETHAddress saveAdress(ETHAddress ethAddress);
 
-    double getBalanceFromAdressById(Long id);
-
     ETHAddress getEthAdressById(Long id);
 
     List<ETHAddress> getAdresses();

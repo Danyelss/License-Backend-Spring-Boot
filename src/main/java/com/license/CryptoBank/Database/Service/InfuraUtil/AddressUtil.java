@@ -1,6 +1,5 @@
-package com.license.CryptoBank.InfuraUtil;
+package com.license.CryptoBank.Database.Service.InfuraUtil;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
-public class AddressUtil {
+public class AddressUtil {  // not working
     public BigDecimal getBalance(String adress) throws ExecutionException, InterruptedException, TimeoutException {
         final Web3j client = Web3j.build(
                 new HttpService(
