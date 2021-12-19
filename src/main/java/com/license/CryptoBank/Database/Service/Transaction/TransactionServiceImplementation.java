@@ -1,35 +1,21 @@
 package com.license.CryptoBank.Database.Service.Transaction;
 
-import com.license.CryptoBank.Database.Entities.Balances;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
-import com.license.CryptoBank.Database.Repository.BalancesRepository;
+import com.license.CryptoBank.Database.Repository.BalanceRepository;
 import com.license.CryptoBank.Database.Repository.ETHAddressRepository;
-import com.license.CryptoBank.Database.Service.Balances.BalancesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-
-import com.license.CryptoBank.Database.Entities.Balances;
-        import com.license.CryptoBank.Database.Repository.BalancesRepository;
-        import lombok.RequiredArgsConstructor;
-        import lombok.extern.slf4j.Slf4j;
-        import org.springframework.security.core.userdetails.UsernameNotFoundException;
-        import org.springframework.stereotype.Service;
-        import org.springframework.transaction.annotation.Transactional;
-
-        import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class TransactionServiceImplementation implements TransactionService {
-    private final BalancesRepository balancesRepository;
+    private final BalanceRepository balanceRepository;
     private final ETHAddressRepository ethAddressRepository;
 
     @Override

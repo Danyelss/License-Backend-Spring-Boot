@@ -1,6 +1,5 @@
 package com.license.CryptoBank.Database.Service.Transaction;
 
-import com.license.CryptoBank.Database.Entities.Balances;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 
 import java.util.List;

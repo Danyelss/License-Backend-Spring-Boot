@@ -5,23 +5,31 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.license.CryptoBank.Database.Entities.Balances;
+import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
-import com.license.CryptoBank.Database.Service.Balances.BalancesService;
+import com.license.CryptoBank.Database.Service.Balance.BalanceService;
 import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
-import com.license.CryptoBank.Database.Service.User.UserService;
+import com.license.CryptoBank.InfuraUtil.AddressUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -32,8 +40,127 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class TransactionResource {
-    private final BalancesService balancesService;
+    private final BalanceService balanceService;
     private final TransactionService transactionService;
+    private final AddressUtil addressUtil;
+
+    private ArrayList<ETHAddress> listOfAdresses = new ArrayList<>();       // do i need in the database? - in case of power failure
+    private ArrayList<AddressData> listOfAdressesData = new ArrayList<>();
+    private Map<ETHAddress, Boolean> addressMap = new HashMap<ETHAddress, Boolean>();
+
+
+    //@Scheduled - fixed delay - time -
+    @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
+    private void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
+
+        ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
+        ArrayList<AddressData> toRemoveData = new ArrayList<AddressData>();
+
+        for (ETHAddress address : listOfAdresses) {
+
+            BigDecimal start = addressUtil.getBalance(listOfAdresses.get(listOfAdresses.indexOf(address)).getAddress()); // get balance before request of transaction
+            BigDecimal end = addressUtil.getBalance(address.getAddress()); // get actual balance
+
+            if (start != end) {
+                balanceService.updateBalanceById(listOfAdresses.get(listOfAdresses.indexOf(address)).getId(), end);       // update balance in database
+
+                toRemoveAdress.add(address);
+                toRemoveData.add(listOfAdressesData.get(listOfAdresses.indexOf(address)));
+
+                addressMap.put(address, false); // is it ok? must wait for all? no - it's scheduled
+            }
+        }
+
+        listOfAdresses.removeAll(toRemoveAdress);
+        listOfAdressesData.removeAll(toRemoveData);
+    }
+
+    @PostConstruct
+    public void init() {
+        List<ETHAddress> ethAddresses = transactionService.getAdresses();
+
+        for (ETHAddress address :
+                ethAddresses) {
+            addressMap.put(address, false);
+        }
+    }
+
+    private ETHAddress addressDistribution() {
+        if (addressMap.containsValue(true)) {
+            for (Map.Entry<ETHAddress, Boolean> entry : addressMap.entrySet()) {
+                if (entry.getValue() == false) {
+                    addressMap.put(entry.getKey(), true);
+
+                    return entry.getKey();
+                }
+            }
+        }
+        return null; // create adress and save it into the database
+    }
+
+    //possible deposits
+
+    @PostMapping("/deposit")
+    public void depositEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String token = authorizationHeader.substring("Bearer ".length());
+
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+
+                JWTVerifier verifier = JWT.require(algorithm).build();
+
+                DecodedJWT decodedJWT = verifier.verify(token);
+
+                String username = decodedJWT.getSubject();
+
+                log.info("Username User resource - {} - asked for deposit", username);
+
+                long id = balanceService.getBalanceByUsername(username).getId();
+
+                // address distubution
+
+                ETHAddress addressForDeposit = addressDistribution();
+
+                // add address for wait
+
+                listOfAdresses.add(addressForDeposit);
+
+                listOfAdressesData.add(new AddressData(addressUtil.getBalance(addressForDeposit.getAddress()), id));
+
+                // send to user
+
+                Map<String, String> deposit = new HashMap<>();
+
+                deposit.put("adress", addressForDeposit.getAddress() + "");
+
+                log.info(addressForDeposit.getAddress() + " ETH adress");
+
+                response.setContentType(APPLICATION_JSON_VALUE);
+
+                new ObjectMapper().writeValue(response.getOutputStream(), deposit);
+
+            } catch (Exception exception) {
+                response.setHeader("error", exception.getMessage());
+                response.setStatus(FORBIDDEN.value());
+
+                //response.sendError(FORBIDDEN.value());
+
+                Map<String, String> error = new HashMap<>();
+                error.put("error_message", exception.getMessage());
+                response.setContentType(APPLICATION_JSON_VALUE);
+
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
+            }
+        } else {
+            throw new RuntimeException("token is missing");
+        }
+    }
+
+    // start of every month, send to mother adress
 
     @PostMapping("/withdraw") // could be 0
     public void withdrawEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -54,7 +181,7 @@ public class TransactionResource {
 
                 log.info("Username User resource - {} - asked for balance", username);
 
-                Balances balance = balancesService.getBalanceByUsername(username);
+                Balance balance = balanceService.getBalanceByUsername(username);
 
                 Map<String, String> bal = new HashMap<>();
                 bal.put("eth", balance.getETH_BAL() + "");
@@ -86,50 +213,11 @@ public class TransactionResource {
         }
     }
 
-    @PostMapping("/deposit") // could be 0
-    public void depositEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String token = authorizationHeader.substring("Bearer ".length());
-
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-
-                JWTVerifier verifier = JWT.require(algorithm).build();
-
-                DecodedJWT decodedJWT = verifier.verify(token);
-
-                String username = decodedJWT.getSubject();
-
-                log.info("Username User resource - {} - asked for deposit", username);
-
-                List<ETHAddress> ethAddresses = transactionService.getAdresses();
-
-                Map<String, String> deposit = new HashMap<>();
-                deposit.put("adress", ethAddresses.get(0).getAddress() + "");
-
-                log.info(ethAddresses.get(0).getAddress() + " ETH adress");
-
-                response.setContentType(APPLICATION_JSON_VALUE);
-
-                new ObjectMapper().writeValue(response.getOutputStream(), deposit);
-
-            } catch (Exception exception) {
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-
-                //response.sendError(FORBIDDEN.value());
-
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
-            }
-        } else {
-            throw new RuntimeException("token is missing");
-        }
+    @Data
+    @AllArgsConstructor
+    class AddressData {
+        private BigDecimal startBalance;
+        private long id;
     }
 }
+

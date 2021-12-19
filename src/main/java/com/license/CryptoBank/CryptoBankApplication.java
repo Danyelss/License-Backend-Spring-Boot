@@ -1,10 +1,10 @@
 package com.license.CryptoBank;
 
-import com.license.CryptoBank.Database.Entities.Balances;
+import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 import com.license.CryptoBank.Database.Entities.Role;
 import com.license.CryptoBank.Database.Entities.User;
-import com.license.CryptoBank.Database.Service.Balances.BalancesService;
+import com.license.CryptoBank.Database.Service.Balance.BalanceService;
 import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
 import com.license.CryptoBank.Database.Service.User.UserService;
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +25,15 @@ public class CryptoBankApplication {
         SpringApplication.run(CryptoBankApplication.class, args);
     }
 
+    //decrypt and encrypt alg
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    CommandLineRunner run(UserService userService, BalancesService balancesService, TransactionService transactionService) {
+    CommandLineRunner run(UserService userService, BalanceService balancesService, TransactionService transactionService) {
         return args -> {
             userService.saveRole(new Role(null, "ROLE_USER"));
             userService.saveRole(new Role(null, "ROLE_MANAGER"));
@@ -64,10 +67,10 @@ public class CryptoBankApplication {
             FIATTestLog.add("on");
             FIATTestLog.add("FIAT");
 
-            balancesService.saveBalance(new Balances(null, "cosmin", 0, 0, ETHTestLog, FIATTestLog));
-            balancesService.saveBalance(new Balances(null, "beni", 1, 1, ETHTestLog, FIATTestLog));
-            balancesService.saveBalance(new Balances(null, "paula", 2.5, 2.3, ETHTestLog, FIATTestLog));
-            balancesService.saveBalance(new Balances(null, "andrei", 100, 64, ETHTestLog, FIATTestLog));
+            balancesService.saveBalance(new Balance(null, "cosmin", BigDecimal.ZERO, 0, ETHTestLog, FIATTestLog));
+            balancesService.saveBalance(new Balance(null, "beni", BigDecimal.ONE, 1, ETHTestLog, FIATTestLog));
+            balancesService.saveBalance(new Balance(null, "paula",  BigDecimal.valueOf(2.5), 2.3, ETHTestLog, FIATTestLog));
+            balancesService.saveBalance(new Balance(null, "andrei", BigDecimal.valueOf(132), 64, ETHTestLog, FIATTestLog));
 
             transactionService.saveAdress(new ETHAddress(null, "0x147d71A3C682280D5C06A79d69ecd82190f253FE", "6152b2b4f4139006c08527946d00fe73ed2ff67ff9d3e1f6a117c8063c8124f3", 0));
             transactionService.saveAdress(new ETHAddress(null, "0xc57d751C013C8087e0FD71296f76cdBC31cDe388", "87bd3a15f55db8751671238f8b61a656cf30620ef6bd75dcd747422a0ffc3067", 0));

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Balances {
+public class Balance {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -27,7 +28,8 @@ public class Balances {
     }
 
     @NotNull
-    private double ETH_BAL;
+    private BigDecimal ETH_BAL;
+
     @NotNull
     private double FIAT_BAL;
 

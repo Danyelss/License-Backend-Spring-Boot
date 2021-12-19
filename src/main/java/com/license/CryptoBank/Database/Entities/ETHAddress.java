@@ -25,7 +25,7 @@ public class ETHAddress {
 
     private String address;
 
-    private String privateKey;
+    private String privateKey; // have to encrypt it
 
     private double balance;
 
@@ -35,7 +35,7 @@ public class ETHAddress {
 
     public String getPrivateKey() {
         return privateKey;
-    }
+    } // have to encrypt it
 
     public double getBalance() {
         return balance;
