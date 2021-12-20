@@ -19,7 +19,6 @@ public class AddressUtil {  // not working
         final Web3j client = Web3j.build(
                 new HttpService(
                         "https://ropsten.infura.io/v3/11a624c953e24db19f72ebedf4170ef8"
-
                 )
         );
 

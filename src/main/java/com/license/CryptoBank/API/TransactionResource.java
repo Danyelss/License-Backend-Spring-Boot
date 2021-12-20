@@ -48,7 +48,7 @@ public class TransactionResource {
     private Map<ETHAddress, Boolean> addressMap = new HashMap<ETHAddress, Boolean>();
 
     //@Scheduled - fixed delay - time -
-    @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
+    @Scheduled(fixedDelay = 1000 * 120, initialDelay = 1000 * 10)
     private void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
 
         ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
@@ -57,7 +57,9 @@ public class TransactionResource {
 
         for (ETHAddress address : listOfAddresses) {
 
-            BigDecimal start = addressUtil.getBalance(listOfAddresses.get(listOfAddresses.indexOf(address)).getAddress()); // get balance before request of transaction
+            log.info("Scanning address: {}", address.getAddress());
+
+            BigDecimal start = listOfAddressesData.get(listOfAddresses.indexOf(address)).getStartBalance();
             BigDecimal end = addressUtil.getBalance(address.getAddress()); // get actual balance
 
             if (start != end) {
@@ -73,6 +75,7 @@ public class TransactionResource {
         listOfAddresses.removeAll(toRemoveAdress);
         listOfAddressesData.removeAll(toRemoveData);
     }
+
 
     public Map<ETHAddress, Boolean> init() {
         log.info("Init eth adresses");
