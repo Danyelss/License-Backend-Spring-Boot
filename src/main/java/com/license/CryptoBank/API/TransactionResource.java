@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Transactional
 @RestController
 @Slf4j
 @RequestMapping("/api")
@@ -49,7 +51,7 @@ public class TransactionResource {
 
     //@Scheduled - fixed delay - time -
     @Scheduled(fixedDelay = 1000 * 120, initialDelay = 1000 * 10)
-    private void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
+    protected void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
 
         ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
         ArrayList<AddressData> toRemoveData = new ArrayList<AddressData>();

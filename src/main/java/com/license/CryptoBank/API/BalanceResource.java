@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.util.*;
 
 import static java.util.Arrays.stream;
@@ -54,7 +55,8 @@ public class BalanceResource {
                 Balance balance = balancesService.getBalanceByUsername(username);
 
                 Map<String, String> bal = new HashMap<>();
-                bal.put("eth", balance.getETH_BAL()+"");
+
+                bal.put("eth", balance.getETH_BAL().toString());
 
                 log.info(balance.getETH_BAL()+" ETH");
 
