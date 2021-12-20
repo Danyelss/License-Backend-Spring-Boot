@@ -34,7 +34,7 @@ public class CryptoBankApplication {
         return new BCryptPasswordEncoder();
     }
 
-
+/*
     @Bean
     CommandLineRunner run(UserService userService, BalanceService balancesService, TransactionService transactionService) {
         return args -> {
@@ -83,6 +83,8 @@ public class CryptoBankApplication {
 
         };
     }
+
+ */
 }
 
 

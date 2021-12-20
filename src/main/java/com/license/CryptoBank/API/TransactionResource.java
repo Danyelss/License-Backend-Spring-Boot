@@ -59,14 +59,18 @@ public class TransactionResource {
 
             log.info("Scanning address: {}", address.getAddress());
 
-            BigDecimal start = listOfAddressesData.get(listOfAddresses.indexOf(address)).getStartBalance();
+            int index = listOfAddresses.indexOf(address);
+
+            BigDecimal start = listOfAddressesData.get(index).getStartBalance();
             BigDecimal end = addressUtil.getBalance(address.getAddress()); // get actual balance
 
-            if (start != end) {
-                balanceService.updateBalanceById(listOfAddresses.get(listOfAddresses.indexOf(address)).getId(), end.subtract(start));       // update balance in database
+            log.info("Start balance: {} - {} :End balance", start, end);
+
+            if (!start.equals(end)) {
+                balanceService.updateBalanceById(listOfAddressesData.get(index).getId(), end.subtract(start));       // update balance in database
 
                 toRemoveAdress.add(address);
-                toRemoveData.add(listOfAddressesData.get(listOfAddresses.indexOf(address)));
+                toRemoveData.add(listOfAddressesData.get(index));
 
                 addressMap.put(address, false); // is it ok? must wait for all? no - it's scheduled
             }
