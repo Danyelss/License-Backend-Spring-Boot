@@ -50,7 +50,7 @@ public class TransactionResource {
     private Map<ETHAddress, Boolean> addressMap = new HashMap<ETHAddress, Boolean>();
 
     //@Scheduled - fixed delay - time -
-    @Scheduled(fixedDelay = 1000 * 120, initialDelay = 1000 * 10)
+    @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
     protected void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
 
         ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
