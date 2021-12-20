@@ -10,6 +10,8 @@ public interface BalanceService {
 
     Balance getBalanceByUsername(String username);
 
+    Balance getBalanceById(long id);
+
     List<Balance> getBalance();
 
     void updateBalanceById(long id, BigDecimal value);

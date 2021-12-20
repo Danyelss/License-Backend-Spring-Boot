@@ -41,6 +41,13 @@ public class BalanceServiceImplementation implements BalanceService {
     }
 
     @Override
+    public Balance getBalanceById(long id) {
+        log.info("Get balance for id {}", id);
+
+        return balanceRepository.getById(id);
+    }
+
+    @Override
     public List<Balance> getBalance() {
         log.info("Fething all balances");
         return balanceRepository.findAll();

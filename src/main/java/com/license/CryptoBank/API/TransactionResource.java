@@ -67,7 +67,14 @@ public class TransactionResource {
             log.info("Start balance: {} - {} :End balance", start, end);
 
             if (!start.equals(end)) {
-                balanceService.updateBalanceById(listOfAddressesData.get(index).getId(), end.subtract(start));       // update balance in database
+                balanceService.updateBalanceById(
+                        listOfAddressesData.get(index).getId(),
+                        end.subtract(start)
+                                .add(balanceService
+                                        .getBalanceById(listOfAddressesData
+                                                .get(index)
+                                                .getId())
+                                        .getETH_BAL()));       // update balance in database
 
                 toRemoveAdress.add(address);
                 toRemoveData.add(listOfAddressesData.get(index));
