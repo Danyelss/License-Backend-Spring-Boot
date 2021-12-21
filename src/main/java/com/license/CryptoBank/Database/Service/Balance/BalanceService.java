@@ -12,6 +12,8 @@ public interface BalanceService {
 
     Balance getBalanceById(long id);
 
+    BigDecimal getEthBalanceById(long id);
+
     List<Balance> getBalance();
 
     void updateBalanceById(long id, BigDecimal value);

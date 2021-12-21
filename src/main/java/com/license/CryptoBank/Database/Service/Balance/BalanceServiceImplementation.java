@@ -47,6 +47,11 @@ public class BalanceServiceImplementation implements BalanceService {
         return balanceRepository.getById(id);
     }
 
+    public BigDecimal getEthBalanceById(long id) {
+        log.info("Get ETH balance for id {}", id);
+        return getBalanceById(id).getETH_BAL();
+    }
+
     @Override
     public List<Balance> getBalance() {
         log.info("Fething all balances");

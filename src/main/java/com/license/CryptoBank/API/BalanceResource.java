@@ -62,7 +62,7 @@ public class BalanceResource {
 
                 bal.put("fiat", balance.getFIAT_BAL()+"");
 
-                log.info(balance.getETH_BAL()+" FIAT");
+                log.info(balance.getFIAT_BAL()+" FIAT");
 
                 response.setContentType(APPLICATION_JSON_VALUE);
 

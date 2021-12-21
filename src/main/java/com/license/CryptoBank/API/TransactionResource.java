@@ -8,17 +8,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 import com.license.CryptoBank.Database.Service.Balance.BalanceService;
-import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
 import com.license.CryptoBank.Database.Service.InfuraUtil.AddressUtil;
+import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,9 +36,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Slf4j
+@Service
 @Transactional
 @RestController
-@Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class TransactionResource {
@@ -53,23 +55,27 @@ public class TransactionResource {
     @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
     protected void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
 
-        ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
-        ArrayList<AddressData> toRemoveData = new ArrayList<AddressData>();
         addressMap = init();
 
-        for (ETHAddress address : listOfAddresses) {
+        ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
+        ArrayList<AddressData> toRemoveData = new ArrayList<AddressData>();
 
-            log.info("Scanning address: {}", address.getAddress());
+        if (!listOfAddresses.isEmpty()) {
+            for (ETHAddress address : listOfAddresses) {
 
-            int index = listOfAddresses.indexOf(address);
+                log.info("Scanning address: {}", address.getAddress());
 
-            BigDecimal start = listOfAddressesData.get(index).getStartBalance();
-            BigDecimal end = addressUtil.getBalance(address.getAddress()); // get actual balance
+                int index = listOfAddresses.indexOf(address);
 
-            log.info("Start balance: {} - {} :End balance", start, end);
+                log.info("With index {}", index);
 
-            if (!start.equals(end)) {
-                balanceService.updateBalanceById(
+                BigDecimal start = listOfAddressesData.get(index).getStartBalance();
+                BigDecimal end = addressUtil.getBalance(address.getAddress()); // get actual balance
+
+                log.info("Start balance: {} - {} :End balance", start, end);
+
+                if (!start.equals(end)) {
+                /*balanceService.updateBalanceById(
                         listOfAddressesData.get(index).getId(),
                         end.subtract(start)
                                 .add(balanceService
@@ -77,20 +83,32 @@ public class TransactionResource {
                                                 .get(index)
                                                 .getId())
                                         .getETH_BAL()));       // update balance in database
+                */
+                    long id = listOfAddressesData.get(index).getId();
+                    log.info("unde mm se opreste {}", id);
 
-                toRemoveAdress.add(address);
-                toRemoveData.add(listOfAddressesData.get(index));
+                    BigDecimal previousBalance = balanceService.getEthBalanceById(id);  // this the one not working
 
-                addressMap.put(address, false); // is it ok? must wait for all? no - it's scheduled
+                    log.info("Previous balance: {}", previousBalance.toString());
+
+                    BigDecimal finalBalance = end.subtract(start).add(previousBalance);
+
+                    log.info("Final balance {}", finalBalance.toString());
+
+                    balanceService.updateBalanceById(id, finalBalance);
+
+                    toRemoveAdress.add(address);
+                    toRemoveData.add(listOfAddressesData.get(index));
+
+                    addressMap.put(address, false); // is it ok? must wait for all? no - it's scheduled
+                }
             }
         }
-
-        listOfAddresses.removeAll(toRemoveAdress);
-        listOfAddressesData.removeAll(toRemoveData);
+            listOfAddresses.removeAll(toRemoveAdress);
+            listOfAddressesData.removeAll(toRemoveData);
     }
 
-
-    public Map<ETHAddress, Boolean> init() {
+    public Map<ETHAddress, Boolean> init() {  // becacuse of this
         log.info("Init eth adresses");
 
         List<ETHAddress> ethAddresses = transactionService.getAdresses();
@@ -107,7 +125,7 @@ public class TransactionResource {
         return auxAddressMap;
     }
 
-    private ETHAddress addressDistribution() {
+    private ETHAddress addressDistribution() {  // not working properly
         if (addressMap.containsValue(false)) {
             for (Map.Entry<ETHAddress, Boolean> entry : addressMap.entrySet()) {
                 if (entry.getValue() == false) {
