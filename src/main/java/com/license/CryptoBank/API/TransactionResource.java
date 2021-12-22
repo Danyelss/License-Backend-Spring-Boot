@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +53,14 @@ public class TransactionResource {
     private ArrayList<AddressData> listOfAddressesData = new ArrayList<>();
     private Map<ETHAddress, Boolean> addressMap = new HashMap<ETHAddress, Boolean>();
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void doSomethingAfterStartup() {
+        addressMap = init();
+    }
+
     //@Scheduled - fixed delay - time -
     @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
     protected void periodicCheck() throws ExecutionException, InterruptedException, TimeoutException {
-
-        addressMap = init();
-
         ArrayList<ETHAddress> toRemoveAdress = new ArrayList<ETHAddress>();
         ArrayList<AddressData> toRemoveData = new ArrayList<AddressData>();
 
@@ -75,17 +79,7 @@ public class TransactionResource {
                 log.info("Start balance: {} - {} :End balance", start, end);
 
                 if (!start.equals(end)) {
-                /*balanceService.updateBalanceById(
-                        listOfAddressesData.get(index).getId(),
-                        end.subtract(start)
-                                .add(balanceService
-                                        .getBalanceById(listOfAddressesData
-                                                .get(index)
-                                                .getId())
-                                        .getETH_BAL()));       // update balance in database
-                */
                     long id = listOfAddressesData.get(index).getId();
-                    log.info("unde mm se opreste {}", id);
 
                     BigDecimal previousBalance = balanceService.getEthBalanceById(id);  // this the one not working
 
@@ -108,7 +102,7 @@ public class TransactionResource {
             listOfAddressesData.removeAll(toRemoveData);
     }
 
-    public Map<ETHAddress, Boolean> init() {  // becacuse of this
+    public Map<ETHAddress, Boolean> init() {
         log.info("Init eth adresses");
 
         List<ETHAddress> ethAddresses = transactionService.getAdresses();
@@ -125,7 +119,7 @@ public class TransactionResource {
         return auxAddressMap;
     }
 
-    private ETHAddress addressDistribution() {  // not working properly
+    private ETHAddress addressDistribution() {
         if (addressMap.containsValue(false)) {
             for (Map.Entry<ETHAddress, Boolean> entry : addressMap.entrySet()) {
                 if (entry.getValue() == false) {
