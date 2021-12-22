@@ -22,15 +22,27 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionEncoder;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.utils.Convert;
+import org.web3j.utils.Numeric;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -130,6 +142,75 @@ public class TransactionResource {
             }
         }
         return null; // create adress and save it into the database
+    }
+
+    private void executeTransaction() {
+        System.out.println("Connecting to Ethereum ...");
+        Web3j web3 = Web3j.build(new HttpService("https://ropsten.infura.io/v3/11a624c953e24db19f72ebedf4170ef8"));
+        System.out.println("Successfuly connected to Ethereum");
+
+        try {
+            String pk = ""; // Add a private key here
+
+            // Decrypt and open the wallet into a Credential object
+            Credentials credentials = Credentials.create(pk);
+            System.out.println("Account address: " + credentials.getAddress());
+            System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
+
+            // Get the latest nonce
+            EthGetTransactionCount ethGetTransactionCount = web3.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send();
+            BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+
+            // Recipient address
+            String recipientAddress = "0x031aCa498E1e4De96E54F22A35fc300a67D4acF2";
+            // Value to transfer (in wei)
+            BigInteger value = Convert.toWei(
+                    Convert.fromWei(web3.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER).round(new MathContext(2, RoundingMode.DOWN)).toString()
+                    , Convert.Unit.ETHER).toBigInteger();
+
+            // Gas Parameters
+            BigInteger gasLimit = BigInteger.valueOf(21000);
+            BigInteger gasPrice = web3.ethGasPrice().send().getGasPrice();
+
+            System.out.println("Gas price " + gasPrice);
+
+            //Convert.toWei("1", Unit.GWEI).toBigInteger();
+
+
+            // Prepare the rawTransaction
+            RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
+                    nonce,
+                    gasPrice,
+                    gasLimit,
+                    recipientAddress,
+                    value);
+
+            // Sign the transaction
+            byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+            String hexValue = Numeric.toHexString(signedMessage);
+
+            // Send transaction
+            EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
+            String transactionHash = ethSendTransaction.getTransactionHash();
+            System.out.println("transactionHash: " + transactionHash);
+
+            // Wait for transaction to be mined
+            Optional<TransactionReceipt> transactionReceipt = null;
+            do {
+                System.out.println("checking if transaction " + transactionHash + " is mined....");
+                EthGetTransactionReceipt ethGetTransactionReceiptResp = web3.ethGetTransactionReceipt(transactionHash).send();
+                transactionReceipt = ethGetTransactionReceiptResp.getTransactionReceipt();
+                Thread.sleep(3000); // Wait 3 sec
+            } while (!transactionReceipt.isPresent());
+
+            System.out.println("Transaction " + transactionHash + " was mined in block # " + transactionReceipt.get().getBlockNumber());
+            System.out.println("Balance: " + Convert.fromWei(web3.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
+
+
+        } catch (IOException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        web3.
     }
 
     //possible deposits
