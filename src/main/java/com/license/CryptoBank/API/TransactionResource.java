@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 import com.license.CryptoBank.Database.Service.Balance.BalanceService;
 import com.license.CryptoBank.Database.Service.InfuraUtil.AddressUtil;
@@ -22,27 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.RawTransaction;
-import org.web3j.crypto.TransactionEncoder;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.utils.Convert;
-import org.web3j.utils.Numeric;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -110,8 +97,8 @@ public class TransactionResource {
                 }
             }
         }
-            listOfAddresses.removeAll(toRemoveAdress);
-            listOfAddressesData.removeAll(toRemoveData);
+        listOfAddresses.removeAll(toRemoveAdress);
+        listOfAddressesData.removeAll(toRemoveData);
     }
 
     public Map<ETHAddress, Boolean> init() {
@@ -227,22 +214,49 @@ public class TransactionResource {
 
                 String username = decodedJWT.getSubject();
 
-                log.info("Username User resource - {} - asked for balance", username);
+                log.info("Username User resource - {} - asked for withdraw", username);
 
-                Balance balance = balanceService.getBalanceByUsername(username);
+                String address = request.getParameter("address");
+                String ammountString = request.getParameter("ammount");
 
-                Map<String, String> bal = new HashMap<>();
-                bal.put("eth", balance.getETH_BAL() + "");
+                log.info("Address to withdraw to: {}", address);
 
-                log.info(balance.getETH_BAL() + " ETH");
+                log.info("Ammount to withdraw: {}", ammountString);
 
-                bal.put("fiat", balance.getFIAT_BAL() + "");
+                Map<String, String> withdraw = new HashMap<>();
 
-                log.info(balance.getETH_BAL() + " FIAT");
+                if (addressUtil.addressIsOk(address.toLowerCase()) && addressUtil.isNumeric(ammountString)) {
+                    long id = balanceService.getBalanceByUsername(username).getId();
+
+                    BigDecimal previousBalance = balanceService.getEthBalanceById(id);
+
+                    BigDecimal ammount = addressUtil.bigDecimalFromString(ammountString);
+
+                    if (previousBalance.subtract(ammount).compareTo(BigDecimal.ZERO) > 0) {
+
+                        log.info("Ammount to BigDecimal to withdraw: {}", ammount);
+
+                        addressUtil.executeTransaction(
+                                "",  // must encrypt the private key
+                                address, ammount);
+
+                        log.info("Transaction sent.");
+
+                        balanceService.updateBalanceById(id, previousBalance.subtract(ammount));
+
+                        withdraw.put("response", "Transaction accepted.");
+
+                    } else {
+                        withdraw.put("response", "Not enough funds for transaction.");
+
+                    }
+                } else {
+                    withdraw.put("response", "Transaction failed: Wrong address or ammount.");
+                }
 
                 response.setContentType(APPLICATION_JSON_VALUE);
 
-                new ObjectMapper().writeValue(response.getOutputStream(), bal);
+                new ObjectMapper().writeValue(response.getOutputStream(), withdraw);
 
             } catch (Exception exception) {
                 response.setHeader("error", exception.getMessage());

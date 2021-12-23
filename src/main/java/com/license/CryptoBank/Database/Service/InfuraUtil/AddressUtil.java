@@ -9,7 +9,9 @@ import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.*;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
@@ -19,14 +21,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
 public class AddressUtil {  // not working
-    public BigDecimal getBalance(String adress) throws ExecutionException, InterruptedException, TimeoutException {
+    public static BigDecimal getBalance(String adress) throws ExecutionException, InterruptedException, TimeoutException {
         final Web3j client = Web3j.build(
                 new HttpService(
                         "https://ropsten.infura.io/v3/11a624c953e24db19f72ebedf4170ef8"
@@ -50,7 +51,7 @@ public class AddressUtil {  // not working
         return false;
     }
 
-    private boolean checksumAddress(String ethereumAddress) {
+    private static boolean checksumAddress(String ethereumAddress) {
         String subAddr = ethereumAddress.substring(2);
 
         String subAddrLower = subAddr.toLowerCase();
@@ -70,11 +71,19 @@ public class AddressUtil {  // not working
         return true;
     }
 
-    private void executeTransaction(String address, BigDecimal ammount) {
+    public static boolean addressIsOk(String address) {
+        if (validAddress(address) && checksumAddress(address)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void executeTransaction(String sender, String recipientAddress, BigDecimal ammount) {
         final Web3j client = Web3j.build(new HttpService("https://ropsten.infura.io/v3/11a624c953e24db19f72ebedf4170ef8"));
 
         try {
-            String pk = ""; // Add a private key here
+            String pk = sender; // Add a private key here
 
             Credentials credentials = Credentials.create(pk);
             System.out.println("Account address: " + credentials.getAddress());
@@ -82,8 +91,6 @@ public class AddressUtil {  // not working
 
             EthGetTransactionCount ethGetTransactionCount = client.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send();
             BigInteger nonce = ethGetTransactionCount.getTransactionCount();
-
-            String recipientAddress = address;
 
             /*
             BigInteger value = Convert.toWei(
@@ -94,7 +101,7 @@ public class AddressUtil {  // not working
                                 Convert.Unit.ETHER).toBigInteger();
             */
 
-            BigInteger value = Convert.toWei(ammount,Convert.Unit.ETHER).toBigInteger();
+            BigInteger value = Convert.toWei(ammount, Convert.Unit.ETHER).toBigInteger();
 
             BigInteger gasLimit = BigInteger.valueOf(21000);
             BigInteger gasPrice = client.ethGasPrice().send().getGasPrice();
@@ -110,20 +117,18 @@ public class AddressUtil {  // not working
             String hexValue = Numeric.toHexString(signedMessage);
 
             EthSendTransaction ethSendTransaction = client.ethSendRawTransaction(hexValue).send();
-           // String transactionHash = ethSendTransaction.getTransactionHash();
+            // String transactionHash = ethSendTransaction.getTransactionHash();
 
             //Optional<TransactionReceipt> transactionReceipt = null;
             //do {
-             //   log.info("checking if transaction " + transactionHash + " is mined....");
+            //   log.info("checking if transaction " + transactionHash + " is mined....");
             //    EthGetTransactionReceipt ethGetTransactionReceiptResp = client.ethGetTransactionReceipt(transactionHash).send();
-             //   transactionReceipt = ethGetTransactionReceiptResp.getTransactionReceipt();
-             //   Thread.sleep(3000); // Wait 3 sec
-           // } while (!transactionReceipt.isPresent());
+            //   transactionReceipt = ethGetTransactionReceiptResp.getTransactionReceipt();
+            //   Thread.sleep(3000); // Wait 3 sec
+            // } while (!transactionReceipt.isPresent());
 
             //System.out.println("Transaction " + transactionHash + " was mined in block # " + transactionReceipt.get().getBlockNumber());
             //System.out.println("Balance: " + Convert.fromWei(client.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
-
-
         } catch (IOException
                 // | InterruptedException
                 ex) {
@@ -132,4 +137,21 @@ public class AddressUtil {  // not working
 
     }
 
+    public BigDecimal bigDecimalFromString(String value) {
+        return new BigDecimal(value).round(new MathContext(18, RoundingMode.DOWN));
+    }
+
+    public static boolean isNumeric(String string) {
+        if (string == null || string.equals("")) {
+            return false;
+        }
+
+        try {
+            Double doubleVal = Double.parseDouble(string);
+            return true;
+        } catch (NumberFormatException e) {
+            System.out.println("Input String cannot be parsed to Integer.");
+        }
+        return false;
+    }
 }
