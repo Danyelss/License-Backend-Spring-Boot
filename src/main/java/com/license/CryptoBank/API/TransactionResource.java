@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 import com.license.CryptoBank.Database.Service.Balance.BalanceService;
+import com.license.CryptoBank.Database.Service.Encryption.EncryptionDecryption;
 import com.license.CryptoBank.Database.Service.InfuraUtil.AddressUtil;
 import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -53,9 +56,20 @@ public class TransactionResource {
     private Map<ETHAddress, Boolean> addressMap = new HashMap<ETHAddress, Boolean>();
 
     @EventListener(ApplicationReadyEvent.class)
-    public void doSomethingAfterStartup() {
+    private void doSomethingAfterStartup() {
         addressMap = init();
     }
+
+    // start of every month, send to mother address
+
+                /*
+            BigInteger value = Convert.toWei(
+                Convert.fromWei(client.ethGetBalance(credentials.getAddress(),
+                    DefaultBlockParameterName.LATEST).send().getBalance().toString(),
+                        Convert.Unit.ETHER).round(new MathContext(2,
+                            RoundingMode.DOWN)).toString(),
+                                Convert.Unit.ETHER).toBigInteger();
+            */
 
     //@Scheduled - fixed delay - time -
     @Scheduled(fixedDelay = 1000 * 10, initialDelay = 1000 * 10)
@@ -66,7 +80,7 @@ public class TransactionResource {
         if (!listOfAddresses.isEmpty()) {
             for (ETHAddress address : listOfAddresses) {
 
-                log.info("Scanning address: {}", address.getAddress());
+                log.info("Scanning address: {} with id {}", address.getAddress(), address.getId());
 
                 int index = listOfAddresses.indexOf(address);
 
@@ -101,7 +115,7 @@ public class TransactionResource {
         listOfAddressesData.removeAll(toRemoveData);
     }
 
-    public Map<ETHAddress, Boolean> init() {
+    private Map<ETHAddress, Boolean> init() {
         log.info("Init eth adresses");
 
         List<ETHAddress> ethAddresses = transactionService.getAdresses();
@@ -109,10 +123,12 @@ public class TransactionResource {
         Map<ETHAddress, Boolean> auxAddressMap = new HashMap<ETHAddress, Boolean>();
 
         for (ETHAddress address :
-                ethAddresses) {
+                ethAddresses
+                        .subList(1, ethAddresses.size())) {
+
             auxAddressMap.put(address, false);
 
-            log.info("Adress {} added into map", address.getAddress());
+            log.info("Adress {} with id {} added into map", address.getAddress(), address.getId());
         }
 
         return auxAddressMap;
@@ -129,12 +145,10 @@ public class TransactionResource {
             }
         }
         return null; // create adress and save it into the database
-    }
-
-    //possible deposits
+    }  // add address creation
 
     @PostMapping("/deposit")
-    public void depositEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void depositEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
@@ -195,10 +209,8 @@ public class TransactionResource {
         }
     }
 
-    // start of every month, send to mother adress
-
     @PostMapping("/withdraw") // could be 0
-    public void withdrawEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void withdrawEth(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
@@ -236,9 +248,16 @@ public class TransactionResource {
 
                         log.info("Ammount to BigDecimal to withdraw: {}", ammount);
 
-                        addressUtil.executeTransaction(
-                                "",  // must encrypt the private key
+                        List<ETHAddress> ethAddresses = transactionService.getAdresses();
+
+                        log.info("Address {} sends {} ETH to {}", ethAddresses.get(0).getAddress(), ammount, address);
+
+                        IvParameterSpec parameterSpec = EncryptionDecryption.getParameterSpec();
+                        SecretKey secretKey = EncryptionDecryption.getSecretKey();
+
+                        addressUtil.executeTransaction(EncryptionDecryption.decrypt("AES/CBC/PKCS5Padding", ethAddresses.get(0).getPrivateKey(), secretKey, parameterSpec),  // must encrypt the private key
                                 address, ammount);
+
 
                         log.info("Transaction sent.");
 

@@ -1,5 +1,6 @@
 package com.license.CryptoBank.Database.Service.InfuraUtil;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
+@Slf4j
 public class AddressUtil {  // not working
     public static BigDecimal getBalance(String adress) throws ExecutionException, InterruptedException, TimeoutException {
         final Web3j client = Web3j.build(
@@ -86,20 +88,11 @@ public class AddressUtil {  // not working
             String pk = sender; // Add a private key here
 
             Credentials credentials = Credentials.create(pk);
-            System.out.println("Account address: " + credentials.getAddress());
-            System.out.println("Balance: " + Convert.fromWei(client.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
+            log.info("Account address: " + credentials.getAddress());
+            log.info("Balance: " + Convert.fromWei(client.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
 
             EthGetTransactionCount ethGetTransactionCount = client.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send();
             BigInteger nonce = ethGetTransactionCount.getTransactionCount();
-
-            /*
-            BigInteger value = Convert.toWei(
-                Convert.fromWei(client.ethGetBalance(credentials.getAddress(),
-                    DefaultBlockParameterName.LATEST).send().getBalance().toString(),
-                        Convert.Unit.ETHER).round(new MathContext(2,
-                            RoundingMode.DOWN)).toString(),
-                                Convert.Unit.ETHER).toBigInteger();
-            */
 
             BigInteger value = Convert.toWei(ammount, Convert.Unit.ETHER).toBigInteger();
 
@@ -117,18 +110,6 @@ public class AddressUtil {  // not working
             String hexValue = Numeric.toHexString(signedMessage);
 
             EthSendTransaction ethSendTransaction = client.ethSendRawTransaction(hexValue).send();
-            // String transactionHash = ethSendTransaction.getTransactionHash();
-
-            //Optional<TransactionReceipt> transactionReceipt = null;
-            //do {
-            //   log.info("checking if transaction " + transactionHash + " is mined....");
-            //    EthGetTransactionReceipt ethGetTransactionReceiptResp = client.ethGetTransactionReceipt(transactionHash).send();
-            //   transactionReceipt = ethGetTransactionReceiptResp.getTransactionReceipt();
-            //   Thread.sleep(3000); // Wait 3 sec
-            // } while (!transactionReceipt.isPresent());
-
-            //System.out.println("Transaction " + transactionHash + " was mined in block # " + transactionReceipt.get().getBlockNumber());
-            //System.out.println("Balance: " + Convert.fromWei(client.ethGetBalance(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().toString(), Convert.Unit.ETHER));
         } catch (IOException
                 // | InterruptedException
                 ex) {
