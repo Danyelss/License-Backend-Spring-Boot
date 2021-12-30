@@ -255,13 +255,13 @@ public class TransactionResource {
                         IvParameterSpec parameterSpec = EncryptionDecryption.getParameterSpec();
                         SecretKey secretKey = EncryptionDecryption.getSecretKey();
 
+                        balanceService.updateBalanceById(id, previousBalance.subtract(ammount));
+
                         addressUtil.executeTransaction(EncryptionDecryption.decrypt("AES/CBC/PKCS5Padding", ethAddresses.get(0).getPrivateKey(), secretKey, parameterSpec),  // must encrypt the private key
                                 address, ammount);
 
 
                         log.info("Transaction sent.");
-
-                        balanceService.updateBalanceById(id, previousBalance.subtract(ammount));
 
                         withdraw.put("response", "Transaction accepted.");
 
