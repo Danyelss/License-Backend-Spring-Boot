@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
@@ -42,15 +43,39 @@ public class UserResource {
     }
 
     @PostMapping("/user/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
+    public ResponseEntity<User> saveUser(@Valid @RequestBody User user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
         return ResponseEntity.created(uri).body(userService.saveUser(user));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
+        if (user.getRoles().isEmpty()) {
+
+            log.info(user.toString());
+
+            if(userService.getUserByUsername(user.getUsername())!=null)
+                return ResponseEntity.ok().body("Username already exists.");
+
+            if(userService.getUserByEmail(user.getEmail())!=null)
+                return ResponseEntity.ok().body("Email already used.");
+
+            userService.registerUser(user);
+            userService.addRoleToUser(user.getUsername(), "ROLE_USER");
+
+
+            return ResponseEntity.ok().body("User added.");
+        }
+
+        return ResponseEntity.ok().body("Roles must be empty.");
     }
 
     @PostMapping("/user/compot")
     public String Compot() {
         return "wtf";
     }
+
+    // Register user
 
     /*
     @PostMapping("/role/save")

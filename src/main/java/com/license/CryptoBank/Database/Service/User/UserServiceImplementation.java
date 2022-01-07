@@ -53,6 +53,14 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     }
 
     @Override
+    public void registerUser(User user) {
+        log.info("Register user to database {}", user.getLast_name());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        userRepository.save(user);
+    }
+
+    @Override
     public Role saveRole(Role role) {
         log.info("Saving new role to database", role.getName());
         return roleRepository.save(role);
@@ -70,6 +78,12 @@ public class UserServiceImplementation implements UserService, UserDetailsServic
     public User getUserByUsername(String username) {
         log.info("Fetching user {}", username);
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        log.info("Fetching user with email {}", email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
