@@ -1,7 +1,7 @@
 package com.license.CryptoBank.SecurityConfig;
 
-import com.license.CryptoBank.Filter.CustomAuthenticationFilter;
-import com.license.CryptoBank.Filter.CustomAuthorizationFilter;
+import com.license.CryptoBank.Filter.AuthenticationController;
+import com.license.CryptoBank.Filter.AuthorizationController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,19 +32,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        AuthenticationController authenticationController = new AuthenticationController(authenticationManagerBean());
+        authenticationController.setFilterProcessesUrl("/api/login");
+
         http.csrf().disable();
+
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh").permitAll();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers(POST, "/api/register").permitAll();
         http.authorizeRequests().antMatchers(GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
-        //http.authorizeRequests().antMatchers(POST, "/api/register").permitAll();
+
         //http.authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilter(authenticationController);
+        http.addFilterBefore(new AuthorizationController(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

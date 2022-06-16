@@ -1,4 +1,4 @@
-package com.license.CryptoBank.Database.Service.InfuraUtil;
+package com.license.CryptoBank.InfuraUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jcajce.provider.digest.SHA3;

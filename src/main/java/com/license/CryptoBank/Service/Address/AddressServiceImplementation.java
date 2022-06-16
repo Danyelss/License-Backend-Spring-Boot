@@ -1,7 +1,6 @@
-package com.license.CryptoBank.Database.Service.Transaction;
+package com.license.CryptoBank.Service.Address;
 
 import com.license.CryptoBank.Database.Entities.ETHAddress;
-import com.license.CryptoBank.Database.Repository.BalanceRepository;
 import com.license.CryptoBank.Database.Repository.ETHAddressRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class TransactionServiceImplementation implements TransactionService {
-    private final BalanceRepository balanceRepository;
+public class AddressServiceImplementation implements AddressService {
     private final ETHAddressRepository ethAddressRepository;
 
     @Override

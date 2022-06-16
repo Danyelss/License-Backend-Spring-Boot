@@ -1,4 +1,4 @@
-package com.license.CryptoBank.API;
+package com.license.CryptoBank.Controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -6,8 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.CryptoBank.Database.Entities.Balance;
-import com.license.CryptoBank.Database.Service.Balance.BalanceService;
-import com.license.CryptoBank.Database.Service.User.UserService;
+import com.license.CryptoBank.Service.Balance.BalanceService;
+import com.license.CryptoBank.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.RoundingMode;
 import java.util.*;
 
 import static java.util.Arrays.stream;
@@ -29,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class BalanceResource {
+public class BalanceController {
     private final BalanceService balancesService;
     private final UserService userService;
 

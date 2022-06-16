@@ -1,4 +1,4 @@
-package com.license.CryptoBank.Database.Service.User;
+package com.license.CryptoBank.Service.User;
 
 import com.license.CryptoBank.Database.Entities.Role;
 import com.license.CryptoBank.Database.Entities.User;

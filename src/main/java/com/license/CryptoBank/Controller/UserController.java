@@ -1,4 +1,4 @@
-package com.license.CryptoBank.API;
+package com.license.CryptoBank.Controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -7,7 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.CryptoBank.Database.Entities.Role;
 import com.license.CryptoBank.Database.Entities.User;
-import com.license.CryptoBank.Database.Service.User.UserService;
+import com.license.CryptoBank.Service.User.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class UserResource {
+public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
@@ -72,7 +72,7 @@ public class UserResource {
 
     @PostMapping("/user/compot")
     public String Compot() {
-        return "wtf";
+        return "test";
     }
 
     // Register user

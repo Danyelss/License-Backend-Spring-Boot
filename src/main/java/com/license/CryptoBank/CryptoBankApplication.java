@@ -4,10 +4,10 @@ import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
 import com.license.CryptoBank.Database.Entities.Role;
 import com.license.CryptoBank.Database.Entities.User;
-import com.license.CryptoBank.Database.Service.Balance.BalanceService;
-import com.license.CryptoBank.Database.Service.Encryption.EncryptionDecryption;
-import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
-import com.license.CryptoBank.Database.Service.User.UserService;
+import com.license.CryptoBank.Service.Balance.BalanceService;
+import com.license.CryptoBank.Encryption.EncryptionDecryption;
+import com.license.CryptoBank.Service.Address.AddressService;
+import com.license.CryptoBank.Service.User.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,7 +39,7 @@ public class CryptoBankApplication {
 
 
     @Bean
-    CommandLineRunner run(UserService userService, BalanceService balancesService, TransactionService transactionService) {
+    CommandLineRunner run(UserService userService, BalanceService balancesService, AddressService addressService) {
         return args -> {
             userService.saveRole(new Role(null, "ROLE_USER"));
             userService.saveRole(new Role(null, "ROLE_MANAGER"));
@@ -84,12 +84,12 @@ public class CryptoBankApplication {
             IvParameterSpec parameterSpec = EncryptionDecryption.getParameterSpec();
             SecretKey secretKey = EncryptionDecryption.getSecretKey();
 
-            transactionService.saveAdress(new ETHAddress(null, "0x031aCa498E1e4De96E54F22A35fc300a67D4acF2", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "9af469b16a237c32d6825b8f96be6b7abdbccefc49ee401e680cd521ff45f0e8", secretKey, parameterSpec)));
-            transactionService.saveAdress(new ETHAddress(null, "0x147d71A3C682280D5C06A79d69ecd82190f253FE", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "6152b2b4f4139006c08527946d00fe73ed2ff67ff9d3e1f6a117c8063c8124f3", secretKey, parameterSpec)));
-            transactionService.saveAdress(new ETHAddress(null, "0xc57d751C013C8087e0FD71296f76cdBC31cDe388", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "87bd3a15f55db8751671238f8b61a656cf30620ef6bd75dcd747422a0ffc3067", secretKey, parameterSpec)));
-            transactionService.saveAdress(new ETHAddress(null, "0x3090a636a8F6ed016dD60E6026A3992FdD57BD18", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "071f1809ecbbf0e2d6907e82a7f6e891659dbc51e52acab8abcc23a9f72ce39e", secretKey, parameterSpec)));
-            transactionService.saveAdress(new ETHAddress(null, "0x52DBEd018e7fC3edF3Ed922B4D111f79AD81A091", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "0742660d4176e39c892669e4e808ef4e6ff95706774790686ba1098f366cac71", secretKey, parameterSpec)));
-            transactionService.saveAdress(new ETHAddress(null, "0x441ED9b22eDc0ca5a6Fd3260D5d4f6FEA9fab60c", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "18af97f68735354d97454e985bd7246f59a222073f5925c26408cb301cfc4ccc", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x031aCa498E1e4De96E54F22A35fc300a67D4acF2", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "9af469b16a237c32d6825b8f96be6b7abdbccefc49ee401e680cd521ff45f0e8", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x147d71A3C682280D5C06A79d69ecd82190f253FE", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "6152b2b4f4139006c08527946d00fe73ed2ff67ff9d3e1f6a117c8063c8124f3", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0xc57d751C013C8087e0FD71296f76cdBC31cDe388", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "87bd3a15f55db8751671238f8b61a656cf30620ef6bd75dcd747422a0ffc3067", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x3090a636a8F6ed016dD60E6026A3992FdD57BD18", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "071f1809ecbbf0e2d6907e82a7f6e891659dbc51e52acab8abcc23a9f72ce39e", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x52DBEd018e7fC3edF3Ed922B4D111f79AD81A091", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "0742660d4176e39c892669e4e808ef4e6ff95706774790686ba1098f366cac71", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x441ED9b22eDc0ca5a6Fd3260D5d4f6FEA9fab60c", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "18af97f68735354d97454e985bd7246f59a222073f5925c26408cb301cfc4ccc", secretKey, parameterSpec)));
 
         };
     }

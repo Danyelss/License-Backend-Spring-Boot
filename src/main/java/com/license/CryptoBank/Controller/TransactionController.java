@@ -1,4 +1,4 @@
-package com.license.CryptoBank.API;
+package com.license.CryptoBank.Controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -6,10 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.CryptoBank.Database.Entities.ETHAddress;
-import com.license.CryptoBank.Database.Service.Balance.BalanceService;
-import com.license.CryptoBank.Database.Service.Encryption.EncryptionDecryption;
-import com.license.CryptoBank.Database.Service.InfuraUtil.AddressUtil;
-import com.license.CryptoBank.Database.Service.Transaction.TransactionService;
+import com.license.CryptoBank.Service.Balance.BalanceService;
+import com.license.CryptoBank.Encryption.EncryptionDecryption;
+import com.license.CryptoBank.InfuraUtil.AddressUtil;
+import com.license.CryptoBank.Service.Address.AddressService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +46,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class TransactionResource {
+public class TransactionController {
     private final BalanceService balanceService;
-    private final TransactionService transactionService;
+    private final AddressService addressService;
     private final AddressUtil addressUtil;
 
     private ArrayList<ETHAddress> listOfAddresses = new ArrayList<>();       // do i need in the database? - in case of power failure
@@ -118,7 +118,7 @@ public class TransactionResource {
     private Map<ETHAddress, Boolean> init() {
         log.info("Init eth adresses");
 
-        List<ETHAddress> ethAddresses = transactionService.getAdresses();
+        List<ETHAddress> ethAddresses = addressService.getAdresses();
 
         Map<ETHAddress, Boolean> auxAddressMap = new HashMap<ETHAddress, Boolean>();
 
@@ -248,7 +248,7 @@ public class TransactionResource {
 
                         log.info("Ammount to BigDecimal to withdraw: {}", ammount);
 
-                        List<ETHAddress> ethAddresses = transactionService.getAdresses();
+                        List<ETHAddress> ethAddresses = addressService.getAdresses();
 
                         log.info("Address {} sends {} ETH to {}", ethAddresses.get(0).getAddress(), ammount, address);
 

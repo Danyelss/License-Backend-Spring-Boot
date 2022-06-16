@@ -1,6 +1,5 @@
-package com.license.CryptoBank.Service.InfuraUtil;
+package com.license.CryptoBank.InfuraUtil;
 
-import com.license.CryptoBank.Database.Service.InfuraUtil.AddressUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,9 @@ public class AddressUtilTest {
     @Test
     @DisplayName("Zero equals Zero ETH blockchain test")
     void zeroEqualsZeroTest() throws ExecutionException, InterruptedException, TimeoutException {
-        assertEquals(addressUtil.getBalance("0xc57d751C013C8087e0FD71296f76cdBC31cDe388"),addressUtil.getBalance("0xc57d751C013C8087e0FD71296f76cdBC31cDe388"), "Should say that 0E-18 == 0E-18");
+        assertEquals(addressUtil.getBalance("0xc57d751C013C8087e0FD71296f76cdBC31cDe388"),
+                addressUtil.getBalance("0xc57d751C013C8087e0FD71296f76cdBC31cDe388"),
+                "Should say that 0E-18 == 0E-18");
     }
 
     @Test

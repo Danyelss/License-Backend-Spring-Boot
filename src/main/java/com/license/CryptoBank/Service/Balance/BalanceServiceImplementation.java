@@ -1,4 +1,4 @@
-package com.license.CryptoBank.Database.Service.Balance;
+package com.license.CryptoBank.Service.Balance;
 
 import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Repository.BalanceRepository;

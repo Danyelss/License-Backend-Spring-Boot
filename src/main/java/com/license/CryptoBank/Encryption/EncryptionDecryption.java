@@ -1,4 +1,4 @@
-package com.license.CryptoBank.Database.Service.Encryption;
+package com.license.CryptoBank.Encryption;
 
 import org.springframework.stereotype.Service;
 
