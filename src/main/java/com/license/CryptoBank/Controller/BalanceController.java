@@ -31,7 +31,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class BalanceController {
 
-    @Autowired
     private final BalanceService balancesService;
 
     @PostMapping("/balance")
