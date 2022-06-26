@@ -10,6 +10,7 @@ import com.license.CryptoBank.Service.Balance.BalanceService;
 import com.license.CryptoBank.Service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,10 +30,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class BalanceController {
-    private final BalanceService balancesService;
-    private final UserService userService;
 
-    @PostMapping("/balance") // could be 0
+    @Autowired
+    private final BalanceService balancesService;
+
+    @PostMapping("/balance")
     public void getBalanceByUsername(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);

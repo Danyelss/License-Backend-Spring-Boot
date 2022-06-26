@@ -11,6 +11,7 @@ import com.license.CryptoBank.Service.User.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -35,6 +36,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
+
+    @Autowired
     private final UserService userService;
 
     @GetMapping("/users")
@@ -55,10 +58,10 @@ public class UserController {
             log.info(user.toString());
 
             if(userService.getUserByUsername(user.getUsername())!=null)
-                return ResponseEntity.ok().body("Username already exists.");
+                return ResponseEntity.status(409).body("Username already exists.");
 
             if(userService.getUserByEmail(user.getEmail())!=null)
-                return ResponseEntity.ok().body("Email already used.");
+                return ResponseEntity.status(409).body("Email already used.");
 
             userService.registerUser(user);
             userService.addRoleToUser(user.getUsername(), "ROLE_USER");
@@ -67,7 +70,7 @@ public class UserController {
             return ResponseEntity.ok().body("User added.");
         }
 
-        return ResponseEntity.ok().body("Roles must be empty.");
+        return ResponseEntity.status(409).body("Roles must be empty.");
     }
 
     @PostMapping("/user/compot")

@@ -20,6 +20,4 @@ public interface BalanceService {
 
     void saveETH_TransactionLogsToUsername(String username, String log);
 
-    void saveFIAT_TransactionLogsToUsername(String username, String log);
-
 }

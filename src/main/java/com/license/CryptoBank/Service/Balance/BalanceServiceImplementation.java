@@ -54,7 +54,7 @@ public class BalanceServiceImplementation implements BalanceService {
 
     @Override
     public List<Balance> getBalance() {
-        log.info("Fething all balances");
+        log.info("Fetching all balances");
         return balanceRepository.findAll();
     }
 
@@ -73,9 +73,5 @@ public class BalanceServiceImplementation implements BalanceService {
         balanceRepository.findByUsername(username).addETH_TransactionLog(log);
     }
 
-    @Override
-    public void saveFIAT_TransactionLogsToUsername(String username, String log) {
-        balanceRepository.findByUsername(username).addFIAT_TransactionLog(log);
-    }
 
 }
