@@ -91,6 +91,12 @@ public class CryptoBankApplication {
             addressService.saveAdress(new ETHAddress(null, "0x52DBEd018e7fC3edF3Ed922B4D111f79AD81A091", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "0742660d4176e39c892669e4e808ef4e6ff95706774790686ba1098f366cac71", secretKey, parameterSpec)));
             addressService.saveAdress(new ETHAddress(null, "0x441ED9b22eDc0ca5a6Fd3260D5d4f6FEA9fab60c", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "18af97f68735354d97454e985bd7246f59a222073f5925c26408cb301cfc4ccc", secretKey, parameterSpec)));
 
+            addressService.saveAdress(new ETHAddress(null, "0x1FB06899Fe6E97B3c553c89e089E838C327Ab7b9", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "01d3b929d6dbe2a60b8e3aa961260b9f8ce152ab15443427f03c09231a949238", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x5AaB6C8b7cBc4527ef0A43cDA263ce5d78a6B189", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "1c559b4f9eee096cc0978f980cd37b86d5471919b8cba24df191f88155630cfe", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0xDc5559CcFC21D0de52C3e9F318e1d7801a537d5c", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "3d7f26cfb1b21c87bf39bbe62348b58a94d72d5c26f0cc91f8284b5387e4ad03", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0x47bF62419Adb98A6881919Ba8a6E8D1d59088086", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "1f814567e14fc39bce58616b627601fda8b12bd25f5d4d6e3293d469279daac9", secretKey, parameterSpec)));
+            addressService.saveAdress(new ETHAddress(null, "0xfA69430149eC5A1fFd7A9C1CAADBed57f619Ad2c", EncryptionDecryption.encrypt("AES/CBC/PKCS5Padding", "0ef68a8252acd0201b5107b2888d1eda3fd4058b46f8025e37d469d1be382044", secretKey, parameterSpec)));
+
         };
     }
 }
