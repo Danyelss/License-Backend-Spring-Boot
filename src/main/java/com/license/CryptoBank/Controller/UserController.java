@@ -5,13 +5,14 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.license.CryptoBank.Database.Entities.Balance;
 import com.license.CryptoBank.Database.Entities.Role;
 import com.license.CryptoBank.Database.Entities.User;
+import com.license.CryptoBank.Service.Balance.BalanceService;
 import com.license.CryptoBank.Service.User.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,11 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -38,6 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final UserService userService;
+    private final BalanceService balancesService;
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
@@ -56,15 +56,22 @@ public class UserController {
 
             log.info(user.toString());
 
-            if(userService.getUserByUsername(user.getUsername())!=null)
+            if (userService.getUserByUsername(user.getUsername()) != null)
                 return ResponseEntity.status(409).body("Username already exists.");
 
-            if(userService.getUserByEmail(user.getEmail())!=null)
+            if (userService.getUserByEmail(user.getEmail()) != null)
                 return ResponseEntity.status(409).body("Email already used.");
 
             userService.registerUser(user);
             userService.addRoleToUser(user.getUsername(), "ROLE_USER");
 
+            List<String> ETHTestLog = new ArrayList<>();
+            ETHTestLog.add("ETH:");
+
+            List<String> FIATTestLog = new ArrayList<>();
+            FIATTestLog.add("FIAT");
+
+            balancesService.saveBalance(new Balance(null, user.getUsername(), BigDecimal.ZERO, 0, ETHTestLog, FIATTestLog));
 
             return ResponseEntity.ok().body("User added.");
         }
