@@ -47,12 +47,18 @@ public class CryptoBankApplication {
             userService.saveRole(new Role(null, "ROLE_SUPER_ADMIN"));
 
             userService.saveUser(new User(null, "cosmin", "0000", "Pop", "Cosmin", "comsin@encode.com", "07232322", new ArrayList<>()));
+
+            userService.saveUser(new User(null, "prezentare", "0000", "Licenta", "Test", "licenta@licenta.com", "0722222222", new ArrayList<>()));
+
             userService.saveUser(new User(null, "beni1", "0000", "Beniamin", "Cigher", "beni@encode.com", "07424222", new ArrayList<>()));
             userService.saveUser(new User(null, "paula", "0000", "Paula", "Nelli", "pimonca@yahoo.com", "074342322", new ArrayList<>()));
             userService.saveUser(new User(null, "andrei", "0000", "Bretea", "Andrei", "andrei@armata.com", "0725435432", new ArrayList<>()));
             userService.saveUser(new User(null, "an12345", "00", "g", "A", "andr", "07254", new ArrayList<>()));
 
             userService.addRoleToUser("cosmin", "ROLE_USER");
+
+            userService.addRoleToUser("prezentare", "ROLE_USER");
+
             userService.addRoleToUser("beni1", "ROLE_ADMIN");
             userService.addRoleToUser("paula", "ROLE_USER");
             userService.addRoleToUser("andrei", "ROLE_USER");
@@ -76,6 +82,9 @@ public class CryptoBankApplication {
             FIATTestLog.add("FIAT");
 
             balancesService.saveBalance(new Balance(null, "cosmin", BigDecimal.ZERO, 0, ETHTestLog, FIATTestLog));
+
+            balancesService.saveBalance(new Balance(null, "prezentare", BigDecimal.ZERO, 0, ETHTestLog, FIATTestLog));
+
             balancesService.saveBalance(new Balance(null, "beni", BigDecimal.ONE, 1, ETHTestLog, FIATTestLog));
             balancesService.saveBalance(new Balance(null, "paula", BigDecimal.valueOf(2.5), 2.3, ETHTestLog, FIATTestLog));
             balancesService.saveBalance(new Balance(null, "andrei", BigDecimal.valueOf(132), 64, ETHTestLog, FIATTestLog));
